@@ -1,5 +1,5 @@
 const { createClient } = require('@supabase/supabase-js')
-require('dotenv').config()
+const ws = require('ws')
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
@@ -8,6 +8,9 @@ const supabase = createClient(
     auth: {
       autoRefreshToken: false,
       persistSession: false
+    },
+    realtime: {
+      transport: ws
     }
   }
 )
