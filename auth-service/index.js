@@ -17,7 +17,7 @@ app.use(express.json())
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'Auth service is running', port: PORT })
+  res.status(200).json({ status: 'Auth service is running v2', port: PORT })
 })
 
 app.use('/auth', authRoutes)
