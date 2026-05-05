@@ -1,10 +1,10 @@
 
 
 const SERVICES = {
-  auth: 'https://your-auth-service.railway.app',
-  products: 'https://your-products-service.railway.app',
-  orders: 'https://your-orders-service.railway.app',
-  payments: 'https://your-payments-service.railway.app'
+  auth: 'https://ecommerce-auth-service-production.up.railway.app',
+  products: 'https://products-service-production-df2d.up.railway.app',
+  orders: 'https://orders-service-production-ee4d.up.railway.app',
+  payments: 'https://payments-service-production-944d.up.railway.app'
 }
 
 const PUBLIC_ROUTES = [
