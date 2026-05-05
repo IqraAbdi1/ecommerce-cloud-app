@@ -12,9 +12,22 @@ export default function Analytics() {
   useEffect(() => {
     if (!user) return navigate('/login')
     if (!isAdmin()) return navigate('/')
-    api.get('/api/orders/analytics/sales')
-      .then(res => setData(res.data))
-      .catch(console.error)
+
+    Promise.all([
+      api.get('/api/orders/analytics/sales'),
+      api.get('/api/products')
+    ]).then(([analyticsRes, productsRes]) => {
+      const analytics = analyticsRes.data
+      const products = productsRes.data.products
+      const enriched = {
+        ...analytics,
+        top_products: analytics.top_products.map(p => ({
+          ...p,
+          image_url: products.find(prod => prod.id === p.product_id)?.image_url || null
+        }))
+      }
+      setData(enriched)
+    }).catch(console.error)
       .finally(() => setLoading(false))
   }, [user])
 
@@ -23,52 +36,50 @@ export default function Analytics() {
     : 1
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-8">
+    <div className="max-w-4xl mx-auto px-6 py-8 text-white">
       <div className="mb-6">
         <h1 className="text-2xl font-bold">Sales Analytics</h1>
-        <p className="text-gray-400 text-sm mt-1">
+        <p className="text-slate-300 text-sm mt-1">
           Powered by MapReduce — maps over every order and reduces into aggregated totals
         </p>
       </div>
+
       {loading ? (
-        <div className="text-center py-20 text-gray-400">Loading analytics...</div>
+        <div className="text-center py-20 text-slate-300">Loading analytics...</div>
       ) : !data ? (
-        <div className="text-center py-20 text-gray-400">No data available.</div>
+        <div className="text-center py-20 text-slate-300">No data available.</div>
       ) : (
         <>
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-6 text-center">
+            <div className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-xl p-6 text-center">
               <p className="text-blue-400 text-sm mb-2">Total orders</p>
-              <p className="text-4xl font-bold text-blue-600">{data.summary.total_orders}</p>
+              <p className="text-4xl font-bold text-blue-400">{data.summary.total_orders}</p>
             </div>
-            <div className="bg-green-50 border border-green-100 rounded-xl p-6 text-center">
+            <div className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-xl p-6 text-center">
               <p className="text-green-400 text-sm mb-2">Items sold</p>
-              <p className="text-4xl font-bold text-green-600">{data.summary.total_items_sold}</p>
+              <p className="text-4xl font-bold text-green-400">{data.summary.total_items_sold}</p>
             </div>
-            <div className="bg-purple-50 border border-purple-100 rounded-xl p-6 text-center">
+            <div className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-xl p-6 text-center">
               <p className="text-purple-400 text-sm mb-2">Total revenue</p>
-              <p className="text-4xl font-bold text-purple-600">${data.summary.total_revenue}</p>
+              <p className="text-4xl font-bold text-purple-400">${data.summary.total_revenue}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6 mb-6">
-            <h2 className="font-semibold mb-4">Revenue by product</h2>
-            <div className="space-y-3">
+          <div className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-xl p-6 mb-6">
+            <h2 className="font-semibold mb-4 text-white">Revenue by product</h2>
+            <div className="space-y-4">
               {data.top_products.map((p, i) => {
                 const barWidth = maxRevenue > 0
                   ? Math.round((p.total_revenue / maxRevenue) * 100)
                   : 0
-                const colors = [
-                  'bg-blue-500', 'bg-green-500', 'bg-purple-500',
-                  'bg-orange-500', 'bg-pink-500'
-                ]
+                const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500']
                 return (
                   <div key={p.product_id}>
                     <div className="flex justify-between text-sm mb-1">
-                      <span className="font-medium text-gray-700">{p.product_name}</span>
-                      <span className="text-gray-500">${p.total_revenue.toFixed(2)}</span>
+                      <span className="font-medium text-slate-200">{p.product_name}</span>
+                      <span className="text-slate-400">${p.total_revenue.toFixed(2)}</span>
                     </div>
-                    <div className="w-full bg-gray-100 rounded-full h-4 overflow-hidden">
+                    <div className="w-full bg-slate-700 rounded-full h-4 overflow-hidden">
                       <div
                         className={`h-4 rounded-full ${colors[i % colors.length]} transition-all duration-500`}
                         style={{ width: `${barWidth}%` }}
@@ -80,56 +91,65 @@ export default function Analytics() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6 mb-6">
-            <h2 className="font-semibold mb-4">Units sold by product</h2>
-            <div className="flex items-end gap-4 h-40">
+          <div className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-xl p-6 mb-6">
+            <h2 className="font-semibold mb-6 text-white">Units sold by product</h2>
+            <div className="space-y-4">
               {data.top_products.map((p, i) => {
                 const maxQty = Math.max(...data.top_products.map(x => x.total_quantity_sold))
-                const height = maxQty > 0
-                  ? Math.round((p.total_quantity_sold / maxQty) * 100)
-                  : 0
-                const colors = [
-                  'bg-blue-400', 'bg-green-400', 'bg-purple-400',
-                  'bg-orange-400', 'bg-pink-400'
-                ]
+                const width = maxQty > 0 ? Math.round((p.total_quantity_sold / maxQty) * 100) : 0
+                const colors = ['bg-blue-500', 'bg-green-500', 'bg-purple-500', 'bg-orange-500', 'bg-pink-500']
                 return (
-                  <div key={p.product_id} className="flex flex-col items-center flex-1">
-                    <span className="text-xs text-gray-500 mb-1">{p.total_quantity_sold}</span>
-                    <div
-                      className={`w-full rounded-t-lg ${colors[i % colors.length]} transition-all duration-500`}
-                      style={{ height: `${height}%` }}
-                    />
-                    <span className="text-xs text-gray-500 mt-1 text-center truncate w-full px-1">
-                      {p.product_name.length > 8
-                        ? p.product_name.substring(0, 8) + '...'
-                        : p.product_name}
-                    </span>
+                  <div key={p.product_id} className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-lg overflow-hidden bg-slate-700 flex-shrink-0">
+                      {p.image_url ? (
+                        <img src={p.image_url} alt={p.product_name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">📦</div>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between text-sm mb-1">
+                        <span className="text-slate-200 font-medium">{p.product_name}</span>
+                        <span className="text-slate-400">{p.total_quantity_sold} units</span>
+                      </div>
+                      <div className="w-full bg-slate-700 rounded-full h-3">
+                        <div
+                          className={`h-3 rounded-full ${colors[i % colors.length]} transition-all duration-500`}
+                          style={{ width: `${width}%` }}
+                        />
+                      </div>
+                    </div>
                   </div>
                 )
               })}
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow overflow-hidden">
-            <div className="px-6 py-4 border-b">
-              <h2 className="font-semibold">Top products — full breakdown</h2>
+          <div className="bg-slate-800 bg-opacity-60 rounded-xl overflow-hidden border border-slate-700">
+            <div className="px-6 py-4 border-b border-slate-700">
+              <h2 className="font-semibold text-white">Top products — full breakdown</h2>
             </div>
             <table className="w-full text-sm">
-              <thead className="bg-gray-50">
+              <thead className="bg-slate-900 bg-opacity-50">
                 <tr>
-                  <th className="text-left px-6 py-3 text-gray-400 font-medium">#</th>
-                  <th className="text-left px-6 py-3 text-gray-400 font-medium">Product</th>
-                  <th className="text-left px-6 py-3 text-gray-400 font-medium">Units sold</th>
-                  <th className="text-left px-6 py-3 text-gray-400 font-medium">Revenue</th>
+                  <th className="text-left px-6 py-3 text-slate-400 font-medium">#</th>
+                  <th className="text-left px-6 py-3 text-slate-400 font-medium">Product</th>
+                  <th className="text-left px-6 py-3 text-slate-400 font-medium">Units sold</th>
+                  <th className="text-left px-6 py-3 text-slate-400 font-medium">Revenue</th>
                 </tr>
               </thead>
               <tbody>
                 {data.top_products.map((p, i) => (
-                  <tr key={p.product_id} className="border-t hover:bg-gray-50">
-                    <td className="px-6 py-4 text-gray-400">{i + 1}</td>
-                    <td className="px-6 py-4 font-medium">{p.product_name}</td>
-                    <td className="px-6 py-4">{p.total_quantity_sold}</td>
-                    <td className="px-6 py-4 text-green-600 font-semibold">
+                  <tr key={p.product_id} className="border-t border-slate-700 hover:bg-slate-700 hover:bg-opacity-30">
+                    <td className="px-6 py-4 text-slate-400">{i + 1}</td>
+                    <td className="px-6 py-4 font-medium text-slate-200 flex items-center gap-3 mt-1">
+                      {p.image_url && (
+                        <img src={p.image_url} alt={p.product_name} className="w-8 h-8 rounded object-cover" />
+                      )}
+                      {p.product_name}
+                    </td>
+                    <td className="px-6 py-4 text-slate-300">{p.total_quantity_sold}</td>
+                    <td className="px-6 py-4 text-green-400 font-semibold">
                       ${p.total_revenue.toFixed(2)}
                     </td>
                   </tr>

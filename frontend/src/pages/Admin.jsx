@@ -45,7 +45,6 @@ export default function Admin() {
         if (form[key]) formData.append(key, form[key])
       })
       if (image) formData.append('image', image)
-
       await api.post('/api/products', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
@@ -73,107 +72,124 @@ export default function Admin() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-8">
+    <div className="max-w-5xl mx-auto px-6 py-8 text-white">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h1 className="text-2xl font-bold">Admin Panel</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage your products</p>
+          <p className="text-slate-300 text-sm mt-1">Manage your products</p>
         </div>
-        <span className="bg-yellow-100 text-yellow-700 text-xs px-3 py-1.5 rounded-full font-medium">
+        <span className="bg-yellow-500 text-black text-xs px-3 py-1.5 rounded-full font-medium">
           Admin View
         </span>
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div>
-          <h2 className="text-lg font-semibold mb-4">Add new product</h2>
+          <h2 className="text-lg font-semibold mb-4 text-white">Add new product</h2>
           {message && (
-            <div className={`mb-4 px-4 py-3 rounded-lg text-sm ${
+            <div className={`mb-4 px-4 py-3 rounded-xl text-sm ${
               isSuccess
-                ? 'bg-green-50 border border-green-200 text-green-700'
-                : 'bg-red-50 border border-red-200 text-red-700'
+                ? 'bg-green-900 bg-opacity-40 border border-green-700 border-opacity-40 text-green-400'
+                : 'bg-red-900 bg-opacity-40 border border-red-700 border-opacity-40 text-red-400'
             }`}>
               {message}
             </div>
           )}
-          <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow p-6 space-y-4">
+          <form onSubmit={handleSubmit} className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-2xl p-6 space-y-4">
             <input
-              type="text" placeholder="Product name"
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              placeholder="Product name"
+              className="w-full bg-slate-900 bg-opacity-50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={form.name}
               onChange={e => setForm({...form, name: e.target.value})}
               required
             />
             <textarea
               placeholder="Description"
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-900 bg-opacity-50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               rows={3}
               value={form.description}
               onChange={e => setForm({...form, description: e.target.value})}
             />
             <div className="grid grid-cols-2 gap-3">
               <input
-                type="number" placeholder="Price"
-                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="number"
+                placeholder="Price"
+                className="bg-slate-900 bg-opacity-50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.price}
                 onChange={e => setForm({...form, price: e.target.value})}
                 required
               />
               <input
-                type="number" placeholder="Stock"
-                className="border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="number"
+                placeholder="Stock"
+                className="bg-slate-900 bg-opacity-50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={form.stock}
                 onChange={e => setForm({...form, stock: e.target.value})}
               />
             </div>
             <input
-              type="text" placeholder="Category"
-              className="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              type="text"
+              placeholder="Category"
+              className="w-full bg-slate-900 bg-opacity-50 border border-slate-600 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={form.category}
               onChange={e => setForm({...form, category: e.target.value})}
             />
             <div>
-              <label className="block text-sm text-gray-600 mb-1">Product image</label>
+              <label className="block text-sm text-slate-300 mb-2">Product image</label>
               <input
-                type="file" accept="image/*"
+                type="file"
+                accept="image/*"
                 onChange={e => setImage(e.target.files[0])}
-                className="w-full text-sm text-gray-500"
+                className="w-full text-sm text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-slate-700 file:text-slate-200 hover:file:bg-slate-600"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg font-medium transition disabled:opacity-50"
+              className="w-full bg-blue-600 hover:bg-blue-500 text-white py-3 rounded-xl font-semibold transition disabled:opacity-50"
             >
               {loading ? 'Creating...' : 'Create Product'}
             </button>
           </form>
         </div>
+
         <div>
-          <h2 className="text-lg font-semibold mb-4">
+          <h2 className="text-lg font-semibold mb-4 text-white">
             Existing products ({products.length})
           </h2>
           {fetching ? (
-            <p className="text-gray-400 text-sm">Loading...</p>
+            <p className="text-slate-400 text-sm">Loading...</p>
+          ) : products.length === 0 ? (
+            <div className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-2xl p-8 text-center">
+              <p className="text-4xl mb-3">📦</p>
+              <p className="text-slate-400 text-sm">No products yet</p>
+            </div>
           ) : (
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 max-h-[600px] overflow-y-auto pr-1">
               {products.map(product => (
-                <div key={product.id} className="bg-white rounded-xl shadow p-4 flex justify-between items-center">
+                <div
+                  key={product.id}
+                  className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-xl p-4 flex justify-between items-center hover:border-slate-600 transition"
+                >
                   <div className="flex items-center gap-3">
-                    {product.image_url && (
+                    {product.image_url ? (
                       <img
                         src={product.image_url}
                         alt={product.name}
                         className="w-12 h-12 object-cover rounded-lg"
                       />
+                    ) : (
+                      <div className="w-12 h-12 bg-slate-700 rounded-lg flex items-center justify-center text-xl">📦</div>
                     )}
                     <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-xs text-gray-400">${product.price} · Stock: {product.stock}</p>
+                      <p className="font-medium text-white">{product.name}</p>
+                      <p className="text-xs text-slate-400">${product.price} · Stock: {product.stock}</p>
                     </div>
                   </div>
                   <button
                     onClick={() => handleDelete(product.id)}
-                    className="text-red-500 hover:text-red-700 text-sm font-medium transition"
+                    className="text-red-400 hover:text-red-300 text-sm font-medium transition px-3 py-1 rounded-lg hover:bg-red-900 hover:bg-opacity-30"
                   >
                     Delete
                   </button>

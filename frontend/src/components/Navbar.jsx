@@ -23,98 +23,100 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="bg-gray-900 text-white px-6 py-4 shadow-lg">
-      <div className="flex justify-between items-center">
-        <Link to="/" className="text-xl font-bold text-blue-400">
-          CloudShop
+    <nav className="bg-slate-900 text-white shadow-lg sticky top-0 z-50">
+      <div className="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center gap-4">
+        <Link to="/" className="text-xl font-bold text-blue-400 whitespace-nowrap">
+          ☁ CloudShop
         </Link>
 
-        <form onSubmit={handleSearch} className="flex-1 max-w-md mx-6">
+        <form onSubmit={handleSearch} className="flex-1 max-w-sm">
           <div className="relative">
             <input
               type="text"
               placeholder="Search products..."
-              className="w-full bg-gray-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full bg-slate-800 text-white rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-slate-400"
               value={search}
               onChange={e => setSearch(e.target.value)}
             />
-            <button
-              type="submit"
-              className="absolute right-2 top-1.5 text-gray-400 hover:text-white text-sm px-2"
-            >
+            <button type="submit" className="absolute right-3 top-2 text-slate-400 hover:text-white">
               🔍
             </button>
           </div>
         </form>
 
-        <div className="flex gap-5 items-center text-sm">
-          <Link to="/products" className="hover:text-blue-400 transition">Products</Link>
+        <div className="flex gap-4 items-center text-sm">
+          <Link to="/products" className="text-slate-300 hover:text-white transition">Products</Link>
+
           {user ? (
             <>
               {!isAdminView() && (
                 <>
-                  <Link to="/my-orders" className="hover:text-blue-400 transition">My Orders</Link>
-                  <Link to="/payments" className="hover:text-blue-400 transition">Payments</Link>
-                  <Link to="/profile" className="hover:text-blue-400 transition">Profile</Link>
+                  <Link to="/my-orders" className="text-slate-300 hover:text-white transition hidden md:block">Orders</Link>
+                  <Link to="/payments" className="text-slate-300 hover:text-white transition hidden md:block">Payments</Link>
+                  <Link to="/profile" className="text-slate-300 hover:text-white transition hidden md:block">Profile</Link>
                 </>
               )}
               {isAdminView() && (
                 <>
-                  <Link to="/admin" className="hover:text-yellow-400 transition">Manage Products</Link>
-                  <Link to="/analytics" className="hover:text-yellow-400 transition">Analytics</Link>
+                  <Link to="/admin" className="text-yellow-400 hover:text-yellow-300 transition hidden md:block">Manage</Link>
+                  <Link to="/analytics" className="text-yellow-400 hover:text-yellow-300 transition hidden md:block">Analytics</Link>
                 </>
               )}
               {isAdmin() && (
                 <button
                   onClick={toggleView}
-                  className={`px-3 py-1 rounded-full text-xs font-semibold transition ${
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                     isAdminView()
                       ? 'bg-yellow-500 text-black hover:bg-yellow-400'
-                      : 'bg-gray-600 text-white hover:bg-gray-500'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                   }`}
                 >
-                  {isAdminView() ? 'Switch to Customer View' : 'Switch to Admin View'}
+                  {isAdminView() ? '👤 Customer' : '⚙ Admin'}
                 </button>
               )}
-              <Link to="/cart" className="relative hover:text-blue-400 transition">
-                🛒
+
+              <Link to="/cart" className="relative">
+                <span className="text-xl">🛒</span>
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                     {cartCount}
                   </span>
                 )}
               </Link>
-              <div className="flex items-center gap-2">
-                <span className="text-gray-400">{user.name}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                  isAdmin()
-                    ? 'bg-yellow-500 text-black'
-                    : 'bg-gray-600 text-gray-300'
+
+              <div className="flex items-center gap-2 border-l border-slate-700 pl-4">
+                <div className="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-xs font-bold">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-slate-300 text-xs hidden md:block">{user.name}</span>
+                <span className={`text-xs px-2 py-0.5 rounded-full hidden md:block ${
+                  isAdmin() ? 'bg-yellow-500 text-black' : 'bg-slate-700 text-slate-300'
                 }`}>
                   {isAdminView() ? 'admin' : 'customer'}
                 </span>
               </div>
+
               <button
                 onClick={handleLogout}
-                className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded text-sm transition"
+                className="bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-lg text-xs font-medium transition"
               >
                 Logout
               </button>
             </>
           ) : (
             <>
-              <Link to="/cart" className="relative hover:text-blue-400 transition">
-                🛒
+              <Link to="/cart" className="relative">
+                <span className="text-xl">🛒</span>
                 {cartCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                     {cartCount}
                   </span>
                 )}
               </Link>
-              <Link to="/login" className="hover:text-blue-400 transition">Login</Link>
+              <Link to="/login" className="text-slate-300 hover:text-white transition">Login</Link>
               <Link
                 to="/register"
-                className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition"
+                className="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg font-medium transition"
               >
                 Register
               </Link>
