@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const multer = require('multer')
 const supabase = require('../config/supabase')
-const verifyToken = require('../middleware/auth')
+const { verifyToken, verifyAdmin } = require('../middleware/auth')
 require('dotenv').config()
 
 const upload = multer({ storage: multer.memoryStorage() })
@@ -86,7 +86,7 @@ router.get('/:id', async (req, res) => {
  * @swagger
  * /products:
  *   post:
- *     summary: Create a new product with optional image
+ *     summary: Create a new product with optional image (admin only)
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []
@@ -125,10 +125,12 @@ router.get('/:id', async (req, res) => {
  *         description: Missing required fields
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Admins only
  *       500:
  *         description: Server error
  */
-router.post('/', verifyToken, upload.single('image'), async (req, res) => {
+router.post('/', verifyToken, verifyAdmin, upload.single('image'), async (req, res) => {
   const { name, description, price, stock, category } = req.body
 
   if (!name || !price) {
@@ -174,7 +176,7 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
  * @swagger
  * /products/{id}:
  *   put:
- *     summary: Update a product
+ *     summary: Update a product (admin only)
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []
@@ -206,12 +208,14 @@ router.post('/', verifyToken, upload.single('image'), async (req, res) => {
  *         description: Product updated
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Admins only
  *       404:
  *         description: Product not found
  *       500:
  *         description: Server error
  */
-router.put('/:id', verifyToken, async (req, res) => {
+router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
   const { name, description, price, stock, category } = req.body
 
   try {
@@ -237,7 +241,7 @@ router.put('/:id', verifyToken, async (req, res) => {
  * @swagger
  * /products/{id}:
  *   delete:
- *     summary: Delete a product
+ *     summary: Delete a product (admin only)
  *     tags: [Products]
  *     security:
  *       - bearerAuth: []
@@ -252,12 +256,14 @@ router.put('/:id', verifyToken, async (req, res) => {
  *         description: Product deleted
  *       401:
  *         description: Unauthorized
+ *       403:
+ *         description: Admins only
  *       404:
  *         description: Product not found
  *       500:
  *         description: Server error
  */
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
   try {
     const { error } = await supabase
       .schema('products')
