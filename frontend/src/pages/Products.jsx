@@ -45,15 +45,15 @@ export default function Products() {
   const categories = [...new Set(products.map(p => p.category).filter(Boolean))]
 
   return (
-    <div className="min-h-screen">
-      <div className="bg-white border-b border-slate-200 px-6 py-6">
+    <div className="min-h-screen text-white">
+      <div className="bg-slate-800 bg-opacity-60 border-b border-slate-700 px-6 py-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">
+              <h1 className="text-2xl font-bold text-white">
                 {searchQuery ? `Results for "${searchQuery}"` : 'All Products'}
               </h1>
-              <p className="text-slate-500 text-sm mt-1">
+              <p className="text-slate-300 text-sm mt-1">
                 {filtered.length} product{filtered.length !== 1 ? 's' : ''} found
               </p>
             </div>
@@ -61,7 +61,9 @@ export default function Products() {
               <button
                 onClick={() => setCategory('')}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                  category === '' ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  category === ''
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                 }`}
               >
                 All
@@ -71,7 +73,9 @@ export default function Products() {
                   key={cat}
                   onClick={() => setCategory(cat)}
                   className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
-                    category === cat ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    category === cat
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
                   }`}
                 >
                   {cat}
@@ -86,12 +90,12 @@ export default function Products() {
         {loading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {[1,2,3,4,5,6].map(i => (
-              <div key={i} className="bg-white rounded-2xl shadow-sm overflow-hidden animate-pulse">
-                <div className="w-full h-48 bg-slate-200"></div>
+              <div key={i} className="bg-slate-800 bg-opacity-60 rounded-2xl overflow-hidden animate-pulse">
+                <div className="w-full h-48 bg-slate-700"></div>
                 <div className="p-4">
-                  <div className="h-4 bg-slate-200 rounded mb-2"></div>
-                  <div className="h-3 bg-slate-100 rounded w-2/3 mb-4"></div>
-                  <div className="h-8 bg-slate-200 rounded"></div>
+                  <div className="h-4 bg-slate-700 rounded mb-2"></div>
+                  <div className="h-3 bg-slate-700 rounded w-2/3 mb-4"></div>
+                  <div className="h-8 bg-slate-700 rounded"></div>
                 </div>
               </div>
             ))}
@@ -99,8 +103,11 @@ export default function Products() {
         ) : filtered.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-5xl mb-4">🔍</p>
-            <p className="text-slate-500 text-lg">No products found</p>
-            <button onClick={() => setCategory('')} className="mt-4 text-blue-600 hover:underline text-sm">
+            <p className="text-slate-300 text-lg">No products found</p>
+            <button
+              onClick={() => setCategory('')}
+              className="mt-4 text-blue-400 hover:underline text-sm"
+            >
               Clear filters
             </button>
           </div>
@@ -109,7 +116,7 @@ export default function Products() {
             {filtered.map(product => (
               <div
                 key={product.id}
-                className="bg-white rounded-2xl shadow-sm hover:shadow-md border border-slate-100 overflow-hidden transition-all duration-200 group"
+                className="bg-slate-800 bg-opacity-60 border border-slate-700 rounded-2xl hover:border-slate-500 overflow-hidden transition-all duration-200 group"
               >
                 <div
                   className="cursor-pointer"
@@ -124,27 +131,27 @@ export default function Products() {
                       />
                     </div>
                   ) : (
-                    <div className="w-full h-52 bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center text-slate-400">
+                    <div className="w-full h-52 bg-slate-700 flex items-center justify-center">
                       <span className="text-4xl">📦</span>
                     </div>
                   )}
                   <div className="p-5">
-                    <div className="flex justify-between items-start mb-1">
-                      <h3 className="font-semibold text-slate-800 text-lg leading-tight">{product.name}</h3>
-                    </div>
+                    <h3 className="font-semibold text-white text-lg leading-tight mb-1">
+                      {product.name}
+                    </h3>
                     {product.category && (
-                      <span className="inline-block text-xs bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full mb-3">
+                      <span className="inline-block text-xs bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full mb-3">
                         {product.category}
                       </span>
                     )}
                     <div className="flex justify-between items-center">
-                      <span className="text-blue-600 font-bold text-xl">${product.price}</span>
+                      <span className="text-blue-400 font-bold text-xl">${product.price}</span>
                       <span className={`text-xs px-2 py-1 rounded-full font-medium ${
                         product.stock === 0
-                          ? 'bg-red-50 text-red-600'
+                          ? 'bg-red-900 bg-opacity-40 text-red-400 border border-red-700 border-opacity-40'
                           : product.stock <= 5
-                            ? 'bg-orange-50 text-orange-600'
-                            : 'bg-green-50 text-green-600'
+                            ? 'bg-orange-900 bg-opacity-40 text-orange-400 border border-orange-700 border-opacity-40'
+                            : 'bg-green-900 bg-opacity-40 text-green-400 border border-green-700 border-opacity-40'
                       }`}>
                         {product.stock === 0 ? 'Out of stock' : product.stock <= 5 ? `${product.stock} left` : 'In stock'}
                       </span>
@@ -159,7 +166,7 @@ export default function Products() {
                       addedId === product.id
                         ? 'bg-green-500 text-white'
                         : product.stock === 0
-                          ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                          ? 'bg-slate-700 text-slate-500 cursor-not-allowed'
                           : 'bg-blue-600 hover:bg-blue-500 text-white'
                     }`}
                   >
