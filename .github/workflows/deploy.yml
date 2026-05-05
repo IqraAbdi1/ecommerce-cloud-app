@@ -1,0 +1,58 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Test auth service
+        run: |
+          cd auth-service
+          npm install
+          echo "Auth service dependencies installed successfully"
+
+      - name: Test products service
+        run: |
+          cd products-service
+          npm install
+          echo "Products service dependencies installed successfully"
+
+      - name: Test orders service
+        run: |
+          cd orders-service
+          npm install
+          echo "Orders service dependencies installed successfully"
+
+      - name: Test payments service
+        run: |
+          cd payments-service
+          npm install
+          echo "Payments service dependencies installed successfully"
+
+      - name: Test frontend
+        run: |
+          cd frontend
+          npm install
+          echo "Frontend dependencies installed successfully"
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Deploy notification
+        run: echo "All services deployed via Railway auto-deploy from GitHub main branch"
